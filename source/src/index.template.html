@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Snow Stunt">
+<meta name="theme-color" content="#0d1630">
+<!--HEADEXTRA-->
+<title>Snow Stunt 2</title>
+<style>
+  :root { --sl: env(safe-area-inset-left, 0px); --sr: env(safe-area-inset-right, 0px); --st: env(safe-area-inset-top, 0px); --sb: env(safe-area-inset-bottom, 0px); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1630; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: none; overscroll-behavior: none; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #safe { position: fixed; left: var(--sl); right: var(--sr); top: var(--st); bottom: var(--sb); pointer-events: none; }
+  .ov { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: calc(12px + var(--st)) calc(16px + var(--sr)) calc(12px + var(--sb)) calc(16px + var(--sl));
+    background: rgba(8, 14, 34, 0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); z-index: 10; }
+  .ov.show { display: flex; }
+  .panel { width: min(640px, 100%); max-height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; text-align: center; }
+  h1 { margin: 0 0 4px; font-size: clamp(34px, 9vh, 64px); font-weight: 900; letter-spacing: 1px; font-style: italic;
+    background: linear-gradient(180deg, #fff 30%, #9fd3ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 4px 24px rgba(120, 190, 255, .35); }
+  h1 span { color: #ffb02e; -webkit-text-fill-color: #ffb02e; }
+  h2 { margin: 0 0 10px; font-size: clamp(22px, 6vh, 34px); font-weight: 800; }
+  .sub { opacity: .75; margin-bottom: 16px; font-size: 14px; }
+  .btn { display: inline-block; margin: 5px; padding: 12px 22px; min-width: 150px; border: 0; border-radius: 14px; font: inherit; font-weight: 800; font-size: 17px; color: #10203f;
+    background: linear-gradient(180deg, #fff, #cfe6ff); box-shadow: 0 4px 0 #7aa3d6, 0 8px 18px rgba(0, 0, 0, .3); cursor: pointer; }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #7aa3d6; }
+  .btn.alt { background: rgba(255, 255, 255, .12); color: #fff; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .25); }
+  .btn.go { background: linear-gradient(180deg, #ffd56b, #ff9d1c); box-shadow: 0 4px 0 #b8640a, 0 8px 18px rgba(0, 0, 0, .3); }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 6px 0 14px; }
+  .lv { position: relative; padding: 10px 6px 8px; border-radius: 14px; background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .06)); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .15); cursor: pointer; }
+  .lv .n { font-size: 26px; font-weight: 900; }
+  .lv .t { font-size: 11px; opacity: .85; min-height: 26px; line-height: 13px; }
+  .lv .s { font-size: 11px; margin-top: 4px; opacity: .9; }
+  .lv.locked { opacity: .35; pointer-events: none; }
+  .cup { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 3px; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .25); }
+  .cup.g { background: #ffcf3a; } .cup.s { background: #d7e1ea; } .cup.b { background: #d58a4a; } .cup.n { background: rgba(255, 255, 255, .15); }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 4px; border-bottom: 1px solid rgba(255, 255, 255, .1); text-align: left; font-size: 15px; }
+  .row small { display: block; opacity: .6; font-size: 12px; }
+  .seg { display: inline-flex; border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .25); flex-shrink: 0; }
+  .seg button { border: 0; background: transparent; color: #fff; font: inherit; font-size: 13px; font-weight: 700; padding: 8px 10px; }
+  .seg button.on { background: #cfe6ff; color: #10203f; }
+  input[type=range] { width: 140px; }
+  .res { display: flex; justify-content: center; gap: 22px; margin: 10px 0 16px; flex-wrap: wrap; }
+  .res div { min-width: 90px; } .res b { display: block; font-size: 26px; } .res span { font-size: 12px; opacity: .7; }
+  .bigcup { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 8px; display: grid; place-items: center; font-size: 30px; font-weight: 900; color: rgba(0, 0, 0, .45); box-shadow: inset 0 -6px 0 rgba(0, 0, 0, .2), 0 0 30px rgba(255, 210, 80, .4); }
+  #pauseBtn { position: fixed; top: calc(8px + var(--st)); right: calc(10px + var(--sr)); width: 44px; height: 44px; border-radius: 12px; border: 0; background: rgba(0, 0, 0, .28); color: #fff; font-size: 18px; font-weight: 900; z-index: 5; display: none; }
+  #toast { position: fixed; left: 50%; bottom: calc(18px + var(--sb)); transform: translateX(-50%); background: rgba(0, 0, 0, .7); padding: 10px 16px; border-radius: 12px; font-size: 14px; z-index: 30; display: none; max-width: 80%; text-align: center; }
+  #rotate { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; flex-direction: column; background: #0d1630; text-align: center; padding: 30px; }
+  #rotate .ph { width: 54px; height: 90px; border: 4px solid #fff; border-radius: 10px; margin-bottom: 18px; animation: rot 2s ease-in-out infinite; }
+  @keyframes rot { 0%, 20% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+  @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+  .hint { font-size: 13px; opacity: .7; margin-top: 10px; line-height: 1.4; }
+  kbd { background: rgba(255, 255, 255, .15); border-radius: 5px; padding: 1px 6px; font-family: inherit; font-size: 12px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="safe"></div>
+<button id="pauseBtn" aria-label="Pause">II</button>
+<div id="toast"></div>
+<div id="rotate"><div class="ph"></div><b>Bitte quer halten</b><div class="hint">Snow Stunt wird im Querformat gespielt.</div></div>
+
+<div class="ov show" id="menu"><div class="panel">
+  <h1>SNOW STUNT <span>2</span></h1>
+  <div class="sub">Extreme Snowboard-Stunts</div>
+  <button class="btn go" id="bPlay">Spielen</button><br>
+  <button class="btn alt" id="bSettings">Einstellungen</button>
+  <button class="btn alt" id="bHelp">Steuerung</button>
+  <div class="hint" id="installHint"></div>
+</div></div>
+
+<div class="ov" id="levels"><div class="panel">
+  <h2>Level wählen</h2>
+  <div class="grid" id="grid"></div>
+  <button class="btn alt" data-back="menu">Zurück</button>
+</div></div>
+
+<div class="ov" id="settings"><div class="panel">
+  <h2>Einstellungen</h2>
+  <div class="row"><div>Steuerung<small>Neigen wie im Original oder Tasten auf dem Bildschirm</small></div>
+    <div class="seg" id="sCtrl"><button data-v="tilt">Neigen</button><button data-v="buttons">Tasten</button></div></div>
+  <div class="row"><div>Neige-Empfindlichkeit<small id="sSensL"></small></div><input type="range" id="sSens" min="10" max="40" step="1"></div>
+  <div class="row"><div>Neigung umkehren<small>Falls die Drehrichtung vertauscht ist</small></div>
+    <div class="seg" id="sInv"><button data-v="0">Aus</button><button data-v="1">An</button></div></div>
+  <div class="row"><div>Neutralstellung<small id="sCalL">Handy in Spielhaltung halten und tippen</small></div><button class="btn alt" style="min-width:0;padding:8px 14px;font-size:14px" id="sCal">Setzen</button></div>
+  <div class="row"><div>Ton</div><div class="seg" id="sSnd"><button data-v="1">An</button><button data-v="0">Aus</button></div></div>
+  <div class="row"><div>Alle Level freischalten</div><button class="btn alt" style="min-width:0;padding:8px 14px;font-size:14px" id="sUnlock">Freischalten</button></div>
+  <div style="margin-top:14px"><button class="btn alt" id="sBack">Fertig</button></div>
+</div></div>
+
+<div class="ov" id="help"><div class="panel">
+  <h2>Steuerung</h2>
+  <div class="row"><div><b>Handy neigen</b><small>Fahrer drehen: am Boden ausbalancieren, in der Luft Flips</small></div></div>
+  <div class="row"><div><b>Nach oben wischen</b><small>Springen (kurz vor der Kante für mehr Höhe)</small></div></div>
+  <div class="row"><div><b>Nach unten wischen</b><small>Ducken (solange der Finger liegt) – unter Hindernissen durch, schneller fahren</small></div></div>
+  <div class="row"><div><b>Linke / rechte Bildschirmhälfte halten</b><small>Tailgrab / Nosegrab in der Luft · beide zusammen = Indy · vor der Landung loslassen!</small></div></div>
+  <div class="row"><div><b>Punkte</b><small>Tricks werden erst am nächsten Checkpoint gesichert. Gerade landen gibt ×2.</small></div></div>
+  <div class="row"><div><b>Tastatur</b><small><kbd>←</kbd><kbd>→</kbd> drehen · <kbd>↑</kbd> springen · <kbd>↓</kbd> ducken · <kbd>A</kbd>/<kbd>D</kbd> Grabs · <kbd>R</kbd> Checkpoint · <kbd>Esc</kbd> Pause</small></div></div>
+  <div style="margin-top:14px"><button class="btn alt" data-back="menu">Zurück</button></div>
+</div></div>
+
+<div class="ov" id="pause"><div class="panel">
+  <h2>Pause</h2>
+  <button class="btn go" id="pResume">Weiter</button><br>
+  <button class="btn alt" id="pCp">Ab Checkpoint</button>
+  <button class="btn alt" id="pRestart">Level neu</button><br>
+  <button class="btn alt" id="pSettings">Einstellungen</button>
+  <button class="btn alt" id="pLevels">Levels</button>
+</div></div>
+
+<div class="ov" id="result"><div class="panel">
+  <div class="bigcup" id="rCup"></div>
+  <h2 id="rTitle">Geschafft!</h2>
+  <div class="res">
+    <div><b id="rScore">0</b><span>Punkte</span></div>
+    <div><b id="rStars">0</b><span>Sterne</span></div>
+    <div><b id="rTime">0</b><span>Zeit</span></div>
+    <div><b id="rFalls">0</b><span>Stürze</span></div>
+  </div>
+  <div class="sub" id="rBest"></div>
+  <button class="btn go" id="rNext">Nächstes Level</button><br>
+  <button class="btn alt" id="rAgain">Nochmal</button>
+  <button class="btn alt" id="rLevels">Levels</button>
+</div></div>
+
+<script>/*PLANCK*/</script>
+<script>/*GAME*/</script>
+</body>
+</html>
