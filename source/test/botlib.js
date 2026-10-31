@@ -34,6 +34,15 @@ function bot(sim, opts) {
       inp.tilt = clamp(-d * 2.2 + r.getAngularVelocity() * 0.12, -1, 1);
     }
     if (opts.grab && sim.air.t > 0.2 && (!h || h.frac * 40 > 5)) inp.grabR = true;
+  } else if (sim.rail) {
+    const R = sim.rail, a = R.path.at(R.s), dir = Math.sign(R.v) || 1;
+    const n = { x: -a.ty, y: a.tx };
+    const p = r.getPosition();
+    for (const hh of [0.6, 1.4]) {
+      const o = { x: p.x + n.x * hh, y: p.y + n.y * hh };
+      if (ray(sim, pl.Vec2(o.x, o.y), pl.Vec2(o.x + a.tx * dir * 8, o.y + a.ty * dir * 8), ['hazard'])) inp.jump = true;
+    }
+    return inp;
   } else {
     const n = sim.groundN;
     const t = { x: n.y, y: -n.x }; // Tangente vorwärts (für +x)
@@ -45,7 +54,7 @@ function bot(sim, opts) {
     if (!down) inp.jump = true;
     // Hindernis in Kopfhöhe?
     let head = null;
-    for (const hh of [1.1, 1.3]) {
+    for (const hh of [1.25, 1.45]) {
       const hb = { x: c.x + n.x * hh, y: c.y + n.y * hh };
       head = head || ray(sim, pl.Vec2(hb.x, hb.y), pl.Vec2(hb.x + fx * 7, hb.y + fy * 7), ['terrain', 'hazard']);
     }

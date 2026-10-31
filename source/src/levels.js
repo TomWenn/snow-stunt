@@ -6,333 +6,333 @@
   const LEVELS = [];
   const def = (name, opts, fn) => { LEVELS.push({ name, make: () => { const b = new Level(name, opts); fn(b); return b.build(); } }); };
 
-  // 1 ─ Erster Schnee: Grundlagen
-  def('Erster Schnee', { cups: [3000, 5500, 8500] }, (b) => {
-    const p = b.path(-14, 0).flat(18);
-    b.spawn(-2, 0, 4);
-    b.sign(2, 0, 'tilt', 'Neigen = drehen');
-    p.down(28, 10).flat(10);
-    b.starsAlong(p, 12, 30, 4, 1.3);
-    b.sign(36, p.yAt(36), 'jump', 'Nach oben wischen = Springen');
-    p.kick(8, 2.2, 22);
-    b.trees(p, -12, 4, 4);
-    b.island(p, 9);
-    // Landehang
-    const q = b.path(56, -10.5).h(36, -16, -18, -4).flat(14);
-    b.starAuto(48, 56, 4);
-    b.checkpoint(98, q.yAt(98), 10);
-    // Ducken
-    b.sign(101, q.yAt(101), 'duck', 'Nach unten wischen = Ducken');
-    q.flat(30);
-    b.rock(112, q.yAt(112) + 1.95, 11, 3.2);
-    b.spikes(112, q.yAt(112) + 1.95, 11, 'down', 0.45);
-    b.starsAlong(q, 114, 121, 3, 0.7);
-    q.down(26, 9).flat(6);
-    b.checkpoint(146, q.yAt(146), 9);
-    b.sign(150, q.yAt(150), 'flip', 'In der Luft neigen = Flip');
-    q.flat(6).kick(9, 3, 32);
-    b.island(q, 12);
-    b.trees(q, 60, 95, 5);
-    // großer Flip-Sprung
-    const r = b.path(194, -37).h(40, -18, -30, -6).flat(30);
-    b.starAuto(185, 197, 5);
-    b.sign(238, r.yAt(238), 'land', 'Gerade landen = Bonus!');
-    b.island(r, 10);
-    b.finish(258, r.yAt(258));
+  // ═══ 1 ─ Gletscherspalte ═══
+  def('Gletscherspalte', { cups: [4500, 11500, 17500], theme: 0 }, (b) => {
+    // Start-Plateau und steile Abfahrt
+    const A = b.path(-18, 0).flat(18);
+    b.spawn(-6, 0, 5);
+    b.sign(-1, 0, 'tilt', 'Neigen');
+    A.h(40, -20, 0, -8).flat(6);
+    b.crystals(A, -16, -4, 3);
+    b.starsAlong(A, 14, 28, 2, 1.6);
+    b.sign(A.x - 3, A.y, 'jump', 'Springen');
+    A.kick(10, 3.5, 28);
+    const l1 = A.end;
+    b.island(A, 12);
+    // großer Sprung über die Spalte
+    b.starAuto(l1[0] + 4, l1[0] + 14, 2);
+    const B = b.path(l1[0] + 11, l1[1] - 10).h(44, -24, -34, -4).flat(14);
+    b.checkpoint(B.x - 8, B.y, 16);
+    // Eisbrücke mit fallenden Eiszapfen
+    B.flat(8);
+    b.rock(B.x - 6, B.y + 5.2, 9, 2.5);
+    b.icicles(B.x - 5, B.x + 1.5, B.y + 5.2, 4, 2.2, 6);
+    b.sign(B.x - 14, B.y, 'warn', 'Eiszapfen!');
+    B.flat(10);
+    b.sign(B.x - 6, B.y, 'duck', 'Ducken');
+    B.flat(22);
+    b.rock(B.x - 18, B.y + 2.3, 16, 3.2);
+    b.spikes(B.x - 18, B.y + 2.3, 16, 'down', 0.35);
+    b.starsAlong(B, B.x - 10, B.x - 10, 1, 0.8);
+    B.flat(6).down(30, 13).flat(4);
+    B.kick(9, 2.6, 26);
+    const l2 = B.end;
+    b.island(B, 12);
+    // Sägen über der Schlucht: große unten, kleine oben
+    b.saw(l2[0] + 8, l2[1] - 7, 2.4);
+    b.saw(l2[0] + 13, l2[1] + 13, 1.0, { my: 1.5, period: 1.8 });
+    b.starAuto(l2[0] + 9, l2[0] + 9, 1);
+    const C = b.path(l2[0] + 14, l2[1] - 7).h(32, -13, -30, -3).flat(10);
+    b.checkpoint(C.x - 5, C.y, 15);
+    b.island(C, 9);
+    // Rail mit Looping über der Spalte
+    const R1 = b.path(C.x - 1.5, C.y + 0.1).flat(2.5).h(26, -11, 0, -26).turn(360, 4.5).l(13, -6);
+    b.rail(R1);
+    b.sign(C.x - 9, C.y, 'arrow', 'Rail!');
+    b.star(C.x + 21, C.y - 7.0);
+    // Landung auf D
+    const D = b.path(R1.x + 5, R1.y - 5).h(28, -11, -28, 0).flat(14);
+    b.checkpoint(D.x - 9, D.y, 15);
+    const dEdge = D.end;
+    b.island(D, 4);
+    // ── Zickzack: unter D zurück nach links ──
+    const ey = dEdge[1] - 12;
+    const ex0 = dEdge[0] - 130;
+    const E = b.path(ex0, ey - 29).h(50, 26, 26, 1.5).l(128, 3).h(9, 9, 0, 90).l(0, 22);
+    b.island(E, 5);
+    b.rock(E.x, ey + 1, 3.5, 30);
+    b.sign(dEdge[0] + 30, ey, 'arrowL', 'Wende!');
+    b.checkpoint(dEdge[0] - 60, ey, 15, -1);
+    b.star(dEdge[0] + 55, ey + 12);
+    b.crystals({ yAt: () => ey }, dEdge[0] - 60, dEdge[0] - 20, 4);
+    // ── zweite Wende: unter E zurück nach rechts ──
+    const fy = ey - 29 - 13;
+    const fx0 = ex0 - 46;
+    const F = b.path(fx0, fy + 30).l(0, -21).h(9, -9, -90, -1).l(200, -9);
+    b.rock(fx0 - 3.5, fy - 1, 3.5, 32);
+    b.checkpoint(fx0 + 70, fy - 70 * 0.045 - 0.4, 15);
+    b.star(fx0 + 4, fy + 9);
+    b.saw(F.x - 14, F.yAt(F.x - 14) - 0.3, 0.95);
+    b.sign(F.x - 24, F.yAt(F.x - 24), 'jump', 'Springen');
+    F.down(36, 16).flat(10).kick(11, 4.5, 34);
+    const l3 = F.end;
+    b.island(F, 10);
+    // Mega-Sprung zum Ziel
+    b.starAuto(l3[0] + 14, l3[0] + 14, 1);
+    const G = b.path(l3[0] + 20, l3[1] - 16).h(46, -24, -36, -4).flat(30);
+    b.sign(G.x - 26, G.y, 'land', 'Landen');
+    b.island(G, 10);
+    b.finish(G.x - 10, G.y);
   });
 
 
-  // Hilfsfunktion: Insel abschließen und Landehang dahinter beginnen
-  const jumpTo = (b, p, gap, drop, len, fall, ang, depth) => {
-    b.island(p, depth || 9);
-    return b.path(p.x + gap, p.y - drop).h(len || 30, -(fall == null ? 12 : fall), -(ang == null ? 26 : ang), -4);
-  };
-
-  // 2 ─ Grab-Schule: Schanzen und Grabs
-  def('Grab-Schule', { cups: [4500, 10000, 15500] }, (b) => {
-    const p = b.path(-12, 0).flat(16);
-    b.spawn(-2, 0, 5);
-    b.sign(3, 0, 'grab', 'Grab');
-    p.down(30, 12).flat(8);
-    b.starsAlong(p, 14, 32, 3, 1.3);
-    b.trees(p, -10, 2, 3);
-    p.kick(8, 2, 25);
-    const l1 = p.end;
-    b.starAuto(l1[0] + 2, l1[0] + 12, 4);
-    let q = jumpTo(b, p, 9, 4, 32, 14, 28);
-    q.flat(10);
-    b.checkpoint(q.x - 4, q.y, 12);
-    b.sign(q.x - 1, q.y, 'flip', 'Flip');
-    q.flat(4).kick(8, 2.5, 28);
-    const l2 = q.end;
-    b.starAuto(l2[0] + 3, l2[0] + 14, 5);
-    let r = jumpTo(b, q, 11, 5, 34, 16, 30);
-    r.flat(6);
-    b.trees(r, r.x - 30, r.x - 6, 3);
-    r.kick(7, 1.5, 18);
-    const l3 = r.end;
-    b.starAuto(l3[0] + 2, l3[0] + 9, 3);
-    let s2 = jumpTo(b, r, 8, 3, 26, 10, 24);
-    s2.flat(8);
-    b.checkpoint(s2.x - 4, s2.y, 12);
-    s2.down(20, 6).flat(4).kick(10, 3.5, 34);
-    const l4 = s2.end;
-    b.sign(l4[0] - 14, s2.yAt(l4[0] - 14), 'land', 'Landen');
-    b.starAuto(l4[0] + 3, l4[0] + 18, 6);
-    let t = jumpTo(b, s2, 14, 6, 40, 18, 32, 12);
-    t.flat(24);
-    b.island(t, 10);
-    b.finish(t.x - 8, t.y);
+  // ═══ 2 ─ Eisberg-Express ═══
+  def('Eisberg-Express', { cups: [6000, 14500, 22000], theme: 1 }, (b) => {
+    const A = b.path(-18, 0).flat(18);
+    b.spawn(-6, 0, 6);
+    A.down(30, 14).flat(18);
+    b.boost(A.x - 16, A.y, 14, 3, 0, 30);
+    b.sign(A.x - 19, A.y, 'arrow', 'Boost!');
+    A.kick(10, 3, 22);
+    const l1 = A.end;
+    b.island(A, 11);
+    // weiter Sprung übers Meer
+    b.starAuto(l1[0] + 8, l1[0] + 18, 1);
+    const B = b.path(l1[0] + 22, l1[1] - 9).h(40, -18, -26, -2).flat(14);
+    b.checkpoint(B.x - 8, B.y, 18);
+    b.island(B, 9);
+    // Wellen-Rail mit Säge auf der Kuppe (drüberspringen!)
+    const R = b.path(B.x - 1.5, B.y + 0.1).flat(2.5).h(16, -7, 0, -24).h(14, 3, -24, 0).h(14, -6, 0, -28).h(16, 2, -28, 0).h(14, -8, 0, -26);
+    b.rail(R);
+    const crest = [B.x + 1 + 16 + 14, B.y + 0.1 - 7 + 3];
+    b.saw(crest[0] + 1, crest[1] + 1.0, 0.75, { spin: -10 });
+    b.sign(B.x - 6, B.y, 'jump', 'Auf der Rail springen');
+    b.star(crest[0] + 1, crest[1] + 4.5);
+    b.pickup(R.x - 8, R.yAt(R.x - 8) + 1.4);
+    // Landung, dann Ventilator-Aufzug
+    const C = b.path(R.x + 6, R.y - 6).h(30, -10, -26, 0).flat(12);
+    b.checkpoint(C.x - 6, C.y, 16);
+    b.sign(C.x - 1, C.y, 'arrowUp', 'Ventilator');
+    C.h(10, 3, 0, 20);
+    b.island(C, 7);
+    const fx = C.x + 1;
+    b.fan(fx, C.y - 18, 15, 28, 30);
+    b.starAuto(fx + 3, fx + 13, 2);
+    const D = b.path(fx + 16, C.y + 7).flat(40).down(16, 4).flat(12);
+    b.island(D, 6);
+    // Haarnadel-Rail: nach unten herum, kopfüber zurück nach links
+    const H = b.path(D.x - 1.5, D.y + 0.1).flat(4).turn(-180, 5.5).l(-16, 0);
+    b.rail(H);
+    b.sign(D.x - 8, D.y, 'flip', 'Kopfüber!');
+    b.star(D.x + 2.5 + 5.5 + 1.6, D.y - 5.5);
+    // E: unter D, nach links abfallend, links eine Schanze
+    const ey = D.y - 19;
+    const E = b.path(D.x - 70, ey - 10).h(7, -2.5, -26, 0).h(50, 12.5, 0, 12).flat(12);
+    b.island(E, 6);
+    b.checkpoint(D.x - 30, E.yAt(D.x - 30), 14, -1);
+    b.starsAlong(E, D.x - 50, D.x - 50, 1, 1.5);
+    // F: unten links, dahinter Gegenwind-Ventilator (Wende nach rechts)
+    const F = b.path(D.x - 112, ey - 22).h(36, 8, 8, 0);
+    b.island(F, 6);
+    b.fan(D.x - 140, ey - 46, 26, 40, 34, 0);
+    b.starAuto(D.x - 120, D.x - 110, 1);
+    // G: tiefer, nach rechts
+    const G = b.path(D.x - 142, ey - 48).h(30, -6, -10, 0).flat(36).kick(10, 3, 26);
+    b.checkpoint(G.x - 30, ey - 54, 16);
+    b.boost(G.x - 26, ey - 54, 14, 3, 0, 27);
+    b.island(G, 8);
+    const l2 = G.end;
+    // Schwerelos-Feld mit kreisenden Sägen
+    b.zerog(l2[0] + 3, l2[1] - 8, 34, 28);
+    b.saw(l2[0] + 16, l2[1] + 6, 1.1, { orbit: 5, period: 3.4 });
+    b.saw(l2[0] + 28, l2[1] + 10, 0.9, { orbit: 4, period: 2.6, phase: 2 });
+    b.starAuto(l2[0] + 10, l2[0] + 30, 2);
+    b.pickup(l2[0] + 20, l2[1] + 8.5);
+    const I = b.path(l2[0] + 40, l2[1] + 4).h(34, -14, -26, -2).flat(8);
+    b.checkpoint(I.x - 4, I.y, 16);
+    b.island(I, 8);
+    // Finale Rail bergab zum Ziel
+    const R2 = b.path(I.x - 1.5, I.y + 0.1).flat(2.5).h(36, -16, 0, -22).h(10, -2, -22, 0);
+    b.rail(R2);
+    b.star(I.x + 18, I.yAt(I.x) - 7 + 1.8);
+    const Z = b.path(R2.x + 4, R2.y - 3).h(20, -5, -20, 0).flat(26);
+    b.island(Z, 8);
+    b.finish(Z.x - 10, Z.y);
   });
 
-  // 3 ─ Sägewerk: Sägen, Rails, Eiszapfen
-  def('Sägewerk', { cups: [2500, 5000, 8000], theme: 1 }, (b) => {
-    const p = b.path(-12, 0).flat(14);
-    b.spawn(-2, 0, 6);
-    p.down(24, 9).flat(10);
-    b.sign(p.x - 9, p.y, 'jump', 'Springen');
-    b.saw(p.x - 2, p.y - 0.15, 0.95);
-    b.star(p.x - 2, p.y + 3.2);
-    p.flat(14);
-    b.sign(p.x - 12, p.y, 'duck', 'Ducken');
-    b.saw(p.x - 4, p.y + 2.75, 1.0);
-    b.star(p.x - 4, p.y + 0.8);
-    p.flat(6).down(18, 6).flat(6);
-    b.checkpoint(p.x - 3, p.y, 11);
-    // Rail-Brücke über eine Schlucht
-    b.sign(p.x - 1, p.y, 'arrow', 'Rail!');
-    b.island(p, 9);
-    const rx = p.x, ry = p.y;
-    b.rail(rx - 0.5, ry + 0.02, rx + 16, ry - 2.5);
-    b.starsAlong({ yAt: (x) => ry + ((x - rx) / 16) * -2.5 }, rx + 2, rx + 14, 4, 1.2);
-    const q = b.path(rx + 16, ry - 2.6).flat(4).down(20, 7).flat(8);
-    b.trees(q, q.x - 26, q.x - 10, 3);
-    // bewegte Säge
-        q.flat(18);
-    b.saw(q.x - 9, q.y + 4.0, 0.9, { my: 1.5, period: 1.6 });
-    b.sign(q.x - 16, q.y, 'duck', 'Ducken');
-    b.checkpoint(q.x - 2, q.y, 11);
-    q.flat(4).kick(7, 2, 24);
-    const l = q.end;
-    b.starAuto(l[0] + 2, l[0] + 10, 4);
-    const r = jumpTo(b, q, 9, 3, 26, 10, 24);
-    r.flat(8);
-    // erhöhte Rail – hochspringen
-    b.sign(r.x - 6, r.y, 'jump', 'Springen');
-    b.rail(r.x - 1, r.y + 1.3, r.x + 14, r.y + 1.1);
-    b.spikes(r.x + 1, r.y, 12, 'up', 0.8);
-    r.flat(16).down(14, 4).flat(6);
-    b.checkpoint(r.x - 3, r.y, 11);
-    // Eiszapfen-Tunnel mit Säge am Boden
-    r.flat(36);
-    b.rock(r.x - 32, r.y + 1.95, 26, 3);
-    b.spikes(r.x - 32, r.y + 1.95, 26, 'down', 0.45);
-    b.sign(r.x - 38, r.y, 'duck', 'Ducken');
-    b.starsAlong(r, r.x - 30, r.x - 8, 5, 0.7);
-    r.flat(18);
-    b.island(r, 10);
-    b.finish(r.x - 8, r.y);
+  // ═══ 3 ─ Kopfstand ═══
+  def('Kopfstand', { cups: [4000, 11000, 17000], theme: 3 }, (b) => {
+    const A = b.path(-18, 0).flat(18);
+    b.spawn(-6, 0, 6);
+    A.down(30, 13).flat(10);
+    b.sign(A.x - 8, A.y, 'warn', 'Schwerkraft-Schalter!');
+    A.kick(9, 3, 30);
+    const l1 = A.end;
+    b.island(A, 10);
+    // Schalter in der Luft -> Schwerkraft nach oben
+    b.gate(l1[0] + 10, l1[1] + 1, l1[1] + 9, 'up');
+    b.starAuto(l1[0] + 5, l1[0] + 5, 1);
+    // Decke: (für umgekehrte Schwerkraft "bergab" = nach oben)
+    const C1 = b.path(l1[0] - 2, l1[1] + 22).flat(8).h(40, 8, 0, 10).flat(12);
+    b.roof(C1, l1[1] + 46);
+    b.sign(l1[0] + 22, C1.yAt(l1[0] + 22), 'land', 'Drehen & landen', true);
+    b.checkpoint(l1[0] + 30, C1.yAt(l1[0] + 30), 15);
+    b.saw(l1[0] + 44, C1.yAt(l1[0] + 44) + 0.25, 0.95);
+    b.sign(l1[0] + 36, C1.yAt(l1[0] + 36), 'jump', 'Springen', true);
+    b.starsAlong(C1, l1[0] + 44, l1[0] + 44, 1, -3.4);
+    C1.flat(16);
+    b.spikes(C1.x - 10, C1.y, 3, 'down', 0.7);
+    b.star(C1.x - 8.5, C1.y - 3.6);
+    C1.h(22, 7, 0, 16);
+    b.roof(C1, l1[1] + 46);
+    // Schalter unter der Decke -> runter
+    const c1e = C1.end;
+    b.gswitch(c1e[0] + 4, c1e[1] - 1.3, 'down');
+    // langer Boden darunter
+    const B = b.path(c1e[0] - 6, c1e[1] - 22).h(30, -8, -20, 0).flat(70);
+    b.checkpoint(B.x - 60, B.y, 15);
+    b.saw(B.x - 34, B.y + 3.1, 1.0, { my: 1.1, period: 1.5 });
+    b.sign(B.x - 44, B.y, 'duck', 'Ducken');
+    b.starsAlong(B, B.x - 34, B.x - 34, 1, 0.9);
+    B.flat(14);
+    b.boost(B.x - 12, B.y, 12, 3, 0, 24);
+    b.island(B, 5);
+    // Haarnadel-Rail nach oben, oben Schalter -> Schwerkraft hoch, kopfüber weiter nach links
+    const H = b.path(B.x - 1.5, B.y + 0.1).flat(4).turn(180, 4.5).l(-18, 0);
+    b.rail(H);
+    b.gswitch(B.x + 2.5 + 4.5, B.y + 9.1 - 1.5, 'up');
+    b.star(B.x + 2.5 + 4.5 + 2.2, B.y + 4.5);
+    // Decke nach links (bergab = nach oben)
+    const hy = B.y + 9.1;
+    const C2 = b.path(B.x - 76, hy + 22).h(50, -14, -12, 0).flat(14);
+    b.ceiling(C2, 5);
+    b.checkpoint(B.x - 40, C2.yAt(B.x - 40), 14, -1);
+    b.saw(B.x - 52, C2.yAt(B.x - 52) - 4.5, 1.2, { orbit: 3, period: 2.4 });
+    b.starsAlong(C2, B.x - 64, B.x - 64, 1, -1.6);
+    b.gswitch(B.x - 72, C2.yAt(B.x - 72) - 1.3, 'down');
+    // tiefer Boden: Landung nach links, Wende-Wand, zurück nach rechts unter B durch
+    const fy = B.y - 16;
+    const fxw = B.x - 120;
+    const F = b.path(fxw, fy + 26).l(0, -17).h(9, -9, -90, 0).flat(40).l(140, -4);
+    b.rock(fxw - 3.5, fy - 1, 3.5, 30);
+    b.island(F, 5);
+    b.star(fxw + 4, fy + 10);
+    b.checkpoint(B.x - 20, F.yAt(B.x - 20), 16);
+    // ── Schwerkraft-Korridor ──
+    const kx = F.x, ky = F.y;
+    const KL = 120;
+    const floor = b.path(kx, ky).flat(KL);
+    b.island(floor, 5);
+    const roofP = b.path(kx + 2, ky + 9).flat(KL - 2);
+    b.ceiling(roofP, 4);
+    b.zone('boost', kx, ky, KL, 9, { dir: [1, 0], str: 20, speed: 19, ang: 0, hidden: true });
+    b.sign(kx - 6, F.yAt(kx - 6), 'warn', 'Korridor!');
+    b.gswitch(kx + 18, ky + 1.3, 'up');
+    b.spikes(kx + 24, ky, 22, 'up', 0.8);
+    b.gswitch(kx + 46, ky + 9 - 1.3, 'down');
+    b.spikes(kx + 50, ky + 9, 20, 'down', 0.8);
+    b.star(kx + 34, ky + 9 - 2.4);
+    b.star(kx + 60, ky + 2.4);
+    b.gswitch(kx + 74, ky + 1.3, 'up');
+    b.spikes(kx + 80, ky, 20, 'up', 0.8);
+    b.gswitch(kx + 102, ky + 9 - 1.3, 'down');
+    b.spikes(kx + 106, ky + 9, 12, 'down', 0.8);
+    // Ausgang: großer Sprung zum Ziel
+    const X = b.path(kx + KL, ky).down(26, 10).flat(6).kick(10, 4, 32);
+    b.island(X, 9);
+    const l3 = X.end;
+    b.starAuto(l3[0] + 10, l3[0] + 10, 1);
+    const Z = b.path(l3[0] + 18, l3[1] - 12).h(40, -18, -32, -3).flat(26);
+    b.island(Z, 9);
+    b.finish(Z.x - 10, Z.y);
   });
 
-  // 4 ─ Turbo: Boosts und riesige Sprünge
-  def('Turbo', { cups: [5000, 10000, 16000] }, (b) => {
-    const p = b.path(-12, 0).flat(20);
-    b.spawn(-2, 0, 5);
-    b.boost(4, 0, 10, 2.5, 0, 24);
-    b.sign(2, 0, 'arrow', 'Boost!');
-    p.down(14, 4).flat(12).kick(9, 3, 30);
-    const l1 = p.end;
-    b.starAuto(l1[0] + 4, l1[0] + 24, 7);
-    let q = jumpTo(b, p, 19, 8, 40, 18, 30, 12);
-    q.flat(10);
-    b.checkpoint(q.x - 6, q.y, 14);
-    // lange Rail bergab
-    b.island(q, 9);
-    b.rail(q.x - 0.5, q.y + 0.02, q.x + 30, q.y - 10);
-    b.starAuto(q.x + 4, q.x + 26, 5);
-    let r = b.path(q.x + 30, q.y - 10.1).h(20, -6, -18, 0).flat(8);
-    b.boost(r.x - 10, r.y, 10, 2.5, 0, 28);
-    r.flat(6).kick(9, 3.5, 34);
-    const l2 = r.end;
-    b.starAuto(l2[0] + 4, l2[0] + 28, 7);
-    let s2 = jumpTo(b, r, 22, 7, 40, 18, 30, 12);
-    s2.flat(10);
-    b.checkpoint(s2.x - 6, s2.y, 14);
-    b.trees(s2, s2.x - 30, s2.x - 8, 3);
-    s2.flat(12);
-    b.saw(s2.x - 3, s2.y - 0.15, 0.95);
-    b.sign(s2.x - 11, s2.y, 'jump', 'Springen');
-    s2.down(30, 12).flat(8);
-    b.boost(s2.x - 6, s2.y, 8, 2.5, 0, 30);
-    s2.kick(8, 3, 32);
-    const l3 = s2.end;
-    b.starAuto(l3[0] + 4, l3[0] + 30, 6);
-    let t = jumpTo(b, s2, 26, 9, 44, 20, 34, 12);
-    t.flat(24);
-    b.island(t, 10);
-    b.finish(t.x - 8, t.y);
+  // ═══ 4 ─ Lawinen-Wahnsinn ═══
+  def('Lawinen-Wahnsinn', { cups: [5500, 12000, 19000], theme: 2 }, (b) => {
+    const A = b.path(-18, 0).flat(18);
+    b.spawn(-6, 0, 6);
+    // riesige Steilabfahrt
+    A.h(60, -34, -4, -6).flat(8);
+    b.starsAlong(A, 22, 22, 1, 1.8);
+    A.kick(11, 4, 30);
+    const l1 = A.end;
+    b.island(A, 14);
+    b.starAuto(l1[0] + 14, l1[0] + 14, 1);
+    const B = b.path(l1[0] + 22, l1[1] - 14).h(48, -24, -36, -2).flat(22);
+    b.checkpoint(B.x - 16, B.y, 18);
+    // Looping
+    b.sign(B.x - 8, B.y, 'arrow', 'Looping!');
+    b.boost(B.x - 12, B.y, 12, 3, 0, 27);
+    const gx = B.x + 7;
+    B.flat(34);
+    b.loop(gx, B.y, 5.5);
+    b.star(gx, B.y + 10.0);
+    // Eistunnel mit fallenden Eiszapfen und Stacheln
+    B.flat(6);
+    const tx = B.x;
+    B.flat(52);
+    b.rock(tx, B.y + 5.2, 50, 3);
+    b.icicles(tx + 4, tx + 46, B.y + 5.2, 8, 2.2, 7);
+    b.spikes(tx + 20, B.y, 3.5, 'up', 0.7);
+    b.sign(tx - 4, B.y, 'warn', 'Schnell durch!');
+    b.starsAlong(B, tx + 21.75, tx + 21.75, 1, 3.6);
+    b.checkpoint(B.x + 4, B.y, 16);
+    B.flat(10);
+    b.island(B, 10);
+    // Rail-Abfahrt mit Looping, dann zweite Rail mit Säge
+    const R1 = b.path(B.x - 1.5, B.y + 0.1).flat(2.5).h(22, -10, 0, -28).turn(360, 4.8).l(10, -4);
+    b.rail(R1);
+    b.star(B.x + 13, B.yAt(B.x) - 5.5 + 1.8);
+    const R2 = b.path(R1.x + 5, R1.y - 4).h(26, -7, -18, -10).h(14, 2, -10, 10).h(16, 4, 10, 22);
+    b.rail(R2);
+    b.saw(R1.x + 5 + 19, R2.yAt(R1.x + 5 + 19) + 0.95, 0.55, { spin: -12 });
+    b.pickup(R1.x + 5 + 36, R2.yAt(R1.x + 5 + 36) + 1.4);
+    // Schwerelos-Feld nach der Rail, am Ende Schalter nach oben
+    const z0 = R2.end;
+    b.zerog(z0[0] + 2, z0[1] - 6, 30, 22);
+    b.starAuto(z0[0] + 10, z0[0] + 24, 2);
+    b.saw(z0[0] + 18, z0[1] + 10, 1.4, { orbit: 4.5, period: 3.2 });
+    b.gate(z0[0] + 34, z0[1] + 2, z0[1] + 14, 'up');
+    // Decke nach rechts (umgekehrte Schwerkraft)
+    const C = b.path(z0[0] + 30, z0[1] + 22).flat(10).h(40, 9, 0, 12).flat(30);
+    b.roof(C, z0[1] + 50);
+    b.checkpoint(z0[0] + 46, C.yAt(z0[0] + 46), 16);
+    b.saw(z0[0] + 64, C.yAt(z0[0] + 64) + 0.3, 0.95);
+    b.sign(z0[0] + 56, C.yAt(z0[0] + 56), 'jump', 'Springen', true);
+    b.spikes(C.x - 8, C.y, 2.5, 'down', 0.7);
+    b.star(C.x - 6.75, C.y - 3.4);
+    const ce = C.end;
+    b.gswitch(ce[0] + 3, ce[1] - 1.3, 'down');
+    // Lawinen-Zickzack nach unten
+    const D = b.path(ce[0] - 4, ce[1] - 28).h(30, -10, -24, 0).flat(16);
+    b.checkpoint(D.x - 8, D.y, 16);
+    const dE = D.end;
+    b.island(D, 4);
+    const ey = dE[1] - 12, ex0 = dE[0] - 110;
+    const E = b.path(ex0, ey - 22).h(44, 20, 24, 1.5).l(116, 2).h(9, 9, 0, 90).l(0, 22);
+    b.island(E, 5);
+    b.rock(E.x, ey + 1, 3.5, 30);
+    b.saw(dE[0] - 40, E.yAt(dE[0] - 40) + 3.9, 1.0, { my: 1.0, period: 1.3 });
+    b.sign(dE[0] - 30, E.yAt(dE[0] - 30), 'duck', 'Ducken');
+    b.star(dE[0] + 54, ey + 11);
+    const fy = ey - 22 - 13, fx0 = ex0 - 46;
+    const F = b.path(fx0, fy + 30).l(0, -21).h(9, -9, -90, -1).l(150, -7);
+    b.rock(fx0 - 3.5, fy - 1, 3.5, 32);
+    b.checkpoint(fx0 + 60, F.yAt(fx0 + 60), 16);
+    b.icicles(fx0 + 90, fx0 + 110, F.yAt(fx0 + 100) + 6.5, 4, 2.4, 6);
+    b.rock(fx0 + 86, F.yAt(fx0 + 100) + 6.5, 28, 2.5);
+    F.down(30, 14).flat(12);
+    b.boost(F.x - 12, F.y, 12, 3, 0, 30);
+    F.kick(12, 5, 36);
+    const l3 = F.end;
+    b.island(F, 10);
+    // Mega-Sprung über die Lawine
+    b.starAuto(l3[0] + 18, l3[0] + 18, 1);
+    const Z = b.path(l3[0] + 26, l3[1] - 18).h(52, -26, -38, -3).flat(30);
+    b.sign(Z.x - 26, Z.y, 'land', 'Landen');
+    b.island(Z, 10);
+    b.finish(Z.x - 10, Z.y);
   });
-
-  // 5 ─ Rückenwind: Ventilatoren und schwebende Berge
-  def('Rückenwind', { cups: [3500, 9000, 14000], theme: 2 }, (b) => {
-    const p = b.path(-12, 0).flat(16);
-    b.spawn(-2, 0, 6);
-    p.down(22, 8).flat(8);
-    b.sign(p.x - 4, p.y, 'arrowUp', 'Ventilator');
-    b.island(p, 9);
-    // Fan 1 in der Schlucht hebt auf höhere Insel
-    const fx = p.x + 2;
-    b.fan(fx, p.y - 14, 7, 26, 46);
-    b.starAuto(fx + 1, fx + 9, 3);
-    let q = b.path(fx + 12, p.y + 5).flat(6).down(24, 7).flat(8);
-    b.checkpoint(q.x - 4, q.y, 11);
-    b.island(q, 8);
-    // Fan 2: zweiter Lift, Sterne in der Höhe
-    const f2 = q.x + 2;
-    b.fan(f2, q.y - 14, 8, 28, 48);
-    b.starAuto(f2 + 1, f2 + 10, 3);
-    let r = b.path(f2 + 13, q.y + 7).flat(4).down(26, 10).flat(6);
-    b.trees(r, r.x - 34, r.x - 6, 3);
-    r.kick(7, 2, 24);
-    const l = r.end;
-    b.starAuto(l[0] + 2, l[0] + 12, 4);
-    let s2 = jumpTo(b, r, 10, 4, 28, 12, 26);
-    s2.flat(8);
-    b.checkpoint(s2.x - 4, s2.y, 11);
-    // Fan über Stachelgrube
-    b.island(s2, 9);
-    const f3 = s2.x + 1;
-    b.fan(f3, s2.y - 8, 14, 20, 30);
-    b.spikes(f3, s2.y - 8, 14, 'up', 0.9);
-    b.rock(f3, s2.y - 9.5, 14, 1.5);
-    b.starAuto(f3 + 2, f3 + 13, 4);
-    let t = b.path(f3 + 16, s2.y - 1).flat(4).down(24, 8).flat(22);
-    b.island(t, 10);
-    b.finish(t.x - 8, t.y);
-  });
-
-  // 6 ─ Kopfüber: Schwerkraft-Umkehr
-  def('Kopfüber', { cups: [2500, 5000, 8000], theme: 3 }, (b) => {
-    const p = b.path(-12, 0).flat(16);
-    b.spawn(-2, 0, 6);
-    p.down(20, 7).flat(6);
-    b.sign(p.x - 4, p.y, 'warn', 'Schwerkraft!');
-    const gy = p.y;
-    // Zone 1: Boden -> Decke
-    const zx = p.x + 4;
-    p.flat(10);
-    b.island(p, 9);
-    b.invert(zx, gy - 2, 34, 19);
-    const c = b.path(zx - 4, gy + 9).flat(6).h(26, 6, 0, 0).flat(8);
-    b.ceiling(c, 6);
-    b.starsAlong({ yAt: (x) => c.yAt(x) - 1.6 }, zx + 19, zx + 31, 4, 0);
-    b.sign(zx + 8, c.yAt(zx + 8), 'land', 'Drehen & landen', true);
-    // nach der Zone: zurück auf den Boden
-    let q = b.path(zx + 30, gy - 4).h(30, -10, -24, -2).flat(10);
-    b.checkpoint(q.x - 5, q.y, 12);
-    q.flat(4);
-    b.island(q, 9);
-    // Zone 2: lange Deckenfahrt mit Sägen
-    const z2 = q.x + 2;
-    b.invert(z2 - 4, q.y - 3, 52, 24);
-    const c2 = b.path(z2 - 6, q.y + 10).flat(8).h(36, 9, 0, 0).flat(10);
-    b.ceiling(c2, 6);
-    b.saw(z2 + 20, c2.yAt(z2 + 20) - 0.3, 0.95);
-    b.sign(z2 + 12, c2.yAt(z2 + 12), 'jump', 'Springen', true);
-    b.starsAlong({ yAt: (x) => c2.yAt(x) - 2.6 }, z2 + 24, z2 + 42, 4, 0);
-    let r = b.path(z2 + 52, q.y - 6).h(30, -10, -26, -2).flat(8);
-    b.checkpoint(r.x - 4, r.y, 12);
-    r.kick(8, 2.5, 28);
-    const l = r.end;
-    b.starAuto(l[0] + 2, l[0] + 12, 4);
-    let s2 = jumpTo(b, r, 10, 4, 30, 12, 26);
-    s2.flat(22);
-    b.island(s2, 10);
-    b.finish(s2.x - 8, s2.y);
-  });
-
-  // 7 ─ Schwerelos: Zero-G-Zonen
-  def('Schwerelos', { cups: [5000, 10000, 16000], theme: 2 }, (b) => {
-    const T = (d) => Math.tan((d * Math.PI) / 180);
-    const p = b.path(-12, 0).flat(16);
-    b.spawn(-2, 0, 6);
-    p.down(26, 10).flat(6);
-    b.sign(p.x - 3, p.y, 'flip', 'Flip');
-    p.kick(8, 1.4, 15);
-    const l1 = p.end;
-    b.island(p, 10);
-    // Zero-G über einer Schlucht – frei drehen!
-    b.zerog(l1[0] + 2, l1[1] - 6, 28, 26);
-    b.starAuto(l1[0] + 5, l1[0] + 27, 7);
-    let q = b.path(l1[0] + 33, l1[1] + T(15) * 30 - 3).h(32, -14, -28, -4).flat(8);
-    b.checkpoint(q.x - 4, q.y, 12);
-    b.trees(q, q.x - 30, q.x - 12, 2);
-    q.flat(4).kick(8, 1.4, 15);
-    const l2 = q.end;
-    b.island(q, 9);
-    // Zero-G mit Sägen
-    b.zerog(l2[0] + 2, l2[1] - 6, 34, 26);
-    b.saw(l2[0] + 14, l2[1] + T(15) * 14 - 3.4, 1.0, { spin: 5 });
-    b.saw(l2[0] + 25, l2[1] + T(25) * 25 + 3.6, 1.0, { spin: -5 });
-    b.starAuto(l2[0] + 5, l2[0] + 31, 7);
-    let r = b.path(l2[0] + 39, l2[1] + T(15) * 36 - 3).h(30, -12, -28, -4).flat(8);
-    b.checkpoint(r.x - 4, r.y, 12);
-    r.flat(4).kick(9, 2.8, 30);
-    const l3 = r.end;
-    b.island(r, 10);
-    // Zero-G steil nach oben
-    b.zerog(l3[0] + 2, l3[1] - 5, 22, 30);
-    b.starAuto(l3[0] + 4, l3[0] + 21, 6);
-    let s2 = b.path(l3[0] + 27, l3[1] + T(30) * 24 - 3).h(36, -16, -30, -4).flat(22);
-    b.island(s2, 10);
-    b.finish(s2.x - 8, s2.y);
-  });
-
-  // 8 ─ Looping: alles zusammen
-  def('Looping', { cups: [3000, 6000, 10000], theme: 1 }, (b) => {
-    const p = b.path(-12, 0).flat(16);
-    b.spawn(-2, 0, 6);
-    p.down(24, 10).flat(10);
-    b.boost(p.x - 12, p.y, 12, 3, 0, 26);
-    b.sign(p.x - 14, p.y, 'arrow', 'Looping!');
-    const gx = p.x + 6;
-    b.loop(gx, p.y, 5);
-    b.star(gx, p.y + 9.0);
-    b.star(gx - 3.6, p.y + 5.0);
-    b.star(gx + 3.6, p.y + 5.0);
-    p.flat(26);
-    b.checkpoint(p.x - 6, p.y, 14);
-    p.down(20, 6).flat(4);
-    // Rail mit Sägen darüber
-    b.island(p, 9);
-    b.rail(p.x - 0.5, p.y + 0.02, p.x + 24, p.y - 7);
-    b.saw(p.x + 12, p.y - 0.3 + 2.4, 0.8, { my: 1.5, period: 2.2 });
-    b.starsAlong({ yAt: (x) => p.y - ((x - p.x) / 24) * 7 }, p.x + 3, p.x + 21, 4, 1.2);
-    let q = b.path(p.x + 24, p.y - 7.1).h(18, -5, -16, 0).flat(8);
-    b.checkpoint(q.x - 4, q.y, 12);
-    q.flat(4);
-    b.island(q, 9);
-    // Schwerkraft-Umkehr mit Stacheln
-    const z = q.x + 2;
-    b.invert(z - 4, q.y - 3, 40, 20);
-    const c = b.path(z - 6, q.y + 9).flat(8).h(26, 6, 0, 0).flat(8);
-    b.ceiling(c, 6);
-    b.spikes(z + 15, c.yAt(z + 15), 2.5, 'down', 0.7);
-    b.sign(z + 8, c.yAt(z + 8), 'jump', 'Springen', true);
-    b.starsAlong({ yAt: (x) => c.yAt(x) - 2.4 }, z + 22, z + 32, 3, 0);
-    let r = b.path(z + 40, q.y - 6).h(30, -10, -26, -2).flat(8);
-    b.checkpoint(r.x - 4, r.y, 12);
-    b.boost(r.x - 8, r.y, 8, 3, 0, 28);
-    r.flat(4).kick(9, 3.5, 34);
-    const l = r.end;
-    b.zerog(l[0] + 6, l[1] - 2, 18, 18);
-    b.starAuto(l[0] + 3, l[0] + 24, 6);
-    let s2 = jumpTo(b, r, 30, -6, 40, 18, 28, 12);
-    s2.flat(22);
-    b.island(s2, 10);
-    b.finish(s2.x - 8, s2.y);
-  });
-
   root.LEVELS = LEVELS;
   if (typeof module !== 'undefined' && module.exports) module.exports = LEVELS;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
